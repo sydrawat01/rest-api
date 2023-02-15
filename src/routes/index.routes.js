@@ -1,3 +1,4 @@
-import healthRoute from './health.route'
+import { healthRoute } from './health.route'
+import { userRoute } from './user.route'
 
-export default healthRoute
+export { healthRoute, userRoute }
