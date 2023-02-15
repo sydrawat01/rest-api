@@ -19,5 +19,6 @@ module.exports = {
     'consistent-return': 'off',
     'max-classes-per-file': 'off',
     'default-param-last': 'off',
+    camelcase: 'off',
   },
 }
