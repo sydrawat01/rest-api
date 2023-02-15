@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import bodyParser from 'body-parser'
+import cors from 'cors'
 import appConfig from './src/configs/app.config'
 import { healthRoute, userRoute } from './src/routes/index.routes'
 import logger from './src/configs/logger.config'
@@ -11,8 +12,8 @@ const app = express()
 const { HOSTNAME, PORT, ENVIRONMENT } = appConfig
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(cors())
 
-// MIDDLEWARES
 app.use('/', healthRoute, userRoute)
 
 // ERROR HANDLER MIDDLEWARE

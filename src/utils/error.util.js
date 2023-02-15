@@ -111,6 +111,40 @@ class GatewayTimeoutError extends HTTPError {
   }
 }
 
+// Handle common Sequelize errors
+class SequelizeUniqueConstraintError extends HTTPError {
+  constructor(message = 'Sequelize Unique Constraint Error', data) {
+    super({
+      message,
+      name: 'SequelizeUniqueConstraintError',
+      statusCode: responseCodes.BAD_REQUEST,
+      data,
+    })
+  }
+}
+
+class SequelizeValidationError extends HTTPError {
+  constructor(message = 'Sequelize Validation Error', data) {
+    super({
+      message,
+      name: 'SequelizeValidationError',
+      statusCode: responseCodes.BAD_REQUEST,
+      data,
+    })
+  }
+}
+
+class SequelizeDatabaseError extends HTTPError {
+  constructor(message = 'Sequelize Database Error', data) {
+    super({
+      message,
+      name: 'SequelizeDatabaseError',
+      statusCode: responseCodes.INTERNAL_SERVER_ERROR,
+      data,
+    })
+  }
+}
+
 export {
   HTTPError,
   UnknownError,
@@ -122,4 +156,7 @@ export {
   BadGatewayError,
   ServiceUnavailableError,
   GatewayTimeoutError,
+  SequelizeUniqueConstraintError,
+  SequelizeValidationError,
+  SequelizeDatabaseError,
 }
