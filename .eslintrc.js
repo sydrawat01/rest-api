@@ -15,5 +15,9 @@ module.exports = {
     semi: 'off',
     'comma-dangle': 'off',
     'no-shadow': 'off',
+    'import/prefer-default-export': 'off',
+    'consistent-return': 'off',
+    'max-classes-per-file': 'off',
+    'default-param-last': 'off',
   },
 }

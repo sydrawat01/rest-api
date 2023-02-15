@@ -12,4 +12,4 @@ const health = (req, res) => {
   res.sendStatus(200).json()
 }
 
-export default health
+export { health }
