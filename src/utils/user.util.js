@@ -1,6 +1,8 @@
 import logger from '../configs/logger.config'
 import {
   BadRequestError,
+  ResourceNotFoundError,
+  ForbiddenError,
   SequelizeUniqueConstraintError,
   SequelizeValidationError,
   SequelizeDatabaseError,
@@ -34,6 +36,32 @@ const formatUserData = (user) => {
 }
 
 /**
+ * Validate the ID passed in the request parameter
+ * @param {*} id the unique user id (uuid)
+ */
+const validateUserID = (id) => {
+  const validUserID =
+    /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
+      id
+    )
+  if (!validUserID) {
+    const message = 'The user ID is invalid'
+    throw new ForbiddenError(message)
+  }
+}
+
+/**
+ * Verify that the user exists in the database
+ * @param {*} user the user object stored in the database
+ */
+const verifyUserInDB = (user) => {
+  if (user === null) {
+    const message = 'User not found in the database'
+    throw new ResourceNotFoundError(message)
+  }
+}
+
+/**
  * Custom function to validate the request body
  * @param {*} req the request body
  */
@@ -42,8 +70,7 @@ const validateRequestBody = (req) => {
   logger.info(`Validating request body for user object`)
   if (req.body.id || req.body.account_created || req.body.account_updated) {
     const message =
-      'id, account_created and account_updated fields cannot be sent in the request body'
-    logger.error(`Invalid request body for user object`, { message })
+      'ID, account_created and account_updated fields cannot be sent in the request body'
     throw new BadRequestError(message)
   }
   // Null check validation for username, password, first_name and last_name
@@ -55,7 +82,6 @@ const validateRequestBody = (req) => {
   ) {
     const message =
       'username, password, first_name, last_name fields are required in the request body'
-    logger.error(`Invalid request body for user object`, { message })
     throw new BadRequestError(message)
   }
 }
@@ -72,12 +98,10 @@ const handleDBErrors = (err, req) => {
   switch (err.name) {
     case 'SequelizeUniqueConstraintError':
       message = `User ${req.body.username} already exists`
-      logger.error(message)
       throw new SequelizeUniqueConstraintError(message)
     case 'SequelizeValidationError':
       message =
-        'Invalid username, Username should be an email Ex: username@mailserver.domain'
-      logger.error(message)
+        'Invalid username, username should be an email Ex: username@mailserver.domain'
       throw new SequelizeValidationError(message)
     case 'SequelizeDatabaseError':
       message = 'Please check the sequelize error codes'
@@ -88,9 +112,14 @@ const handleDBErrors = (err, req) => {
       throw new SequelizeDatabaseError(message, data)
     default:
       message = 'Unknown error occurred'
-      logger.error(message)
       throw new UnknownError(message, err)
   }
 }
 
-export { formatUserData, validateRequestBody, handleDBErrors }
+export {
+  formatUserData,
+  validateRequestBody,
+  handleDBErrors,
+  verifyUserInDB,
+  validateUserID,
+}

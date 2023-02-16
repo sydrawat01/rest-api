@@ -45,7 +45,7 @@ class UnauthorizedError extends HTTPError {
 }
 
 class ForbiddenError extends HTTPError {
-  constructor(message = 'Unauthorized', data) {
+  constructor(message = 'Forbidden', data) {
     super({
       message,
       name: 'Forbidden',
