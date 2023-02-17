@@ -8,6 +8,7 @@ import {
   handleDBErrors,
   validateRequestBody,
   validateUserID,
+  validateUpdateRequest,
 } from '../utils/user.util'
 import { UnauthorizedError } from '../utils/error.util'
 
@@ -81,14 +82,35 @@ const fetchUserData = async (req, res, next) => {
 }
 
 const updateUserData = async (req, res, next) => {
-  const { protocol, method, hostname, originalUrl } = req
-  const headers = { ...req.headers }
-  const metaData = { protocol, method, hostname, originalUrl, headers }
-  logger.info(`Requesting ${method} ${protocol}://${hostname}${originalUrl}`, {
-    metaData,
-  })
+  try {
+    const { protocol, method, hostname, originalUrl } = req
+    const headers = { ...req.headers }
+    const metaData = { protocol, method, hostname, originalUrl, headers }
+    logger.info(
+      `Requesting ${method} ${protocol}://${hostname}${originalUrl}`,
+      {
+        metaData,
+      }
+    )
 
-  const { user } = req
+    const { user } = req
+    // Validate update request body format
+    validateUpdateRequest(req, user.username)
+    // Update user data
+    user.set({
+      first_name: req.body.first_name || user.first_name,
+      last_name: req.body.last_name || user.last_name,
+      password: req.body.password
+        ? await hashPassword(req.body.password)
+        : user.password,
+      account_updated: new Date(),
+    })
+    // Save the updated user data in the database
+    await user.save()
+    res.status(204).send()
+  } catch (err) {
+    next(err)
+  }
 }
 
 export { createUser, fetchUserData, updateUserData }
