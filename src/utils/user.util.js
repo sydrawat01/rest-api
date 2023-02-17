@@ -67,7 +67,6 @@ const verifyUserInDB = (user) => {
  */
 const validateRequestBody = (req) => {
   // Validation for ID, account_created and account_updated fields
-  logger.info(`Validating request body for user object`)
   if (req.body.id || req.body.account_created || req.body.account_updated) {
     const message =
       'ID, account_created and account_updated fields cannot be sent in the request body'
@@ -82,6 +81,25 @@ const validateRequestBody = (req) => {
   ) {
     const message =
       'username, password, first_name, last_name fields are required in the request body'
+    throw new BadRequestError(message)
+  }
+}
+
+const validateUpdateRequest = (req, username) => {
+  // Validation for ID, username, account_created and account_updated fields
+  if (
+    req.body.id ||
+    req.body.account_created ||
+    req.body.account_updated ||
+    req.body.username
+  ) {
+    const message =
+      'ID, username, account_created and account_updated fields cannot be sent in the request body'
+    throw new BadRequestError(message)
+  }
+  // Null check for first_name, last_name and password
+  if (!(req.body.first_name || req.body.last_name || req.body.password)) {
+    const message = 'password, first_name and last_name are required'
     throw new BadRequestError(message)
   }
 }
@@ -122,4 +140,5 @@ export {
   handleDBErrors,
   verifyUserInDB,
   validateUserID,
+  validateUpdateRequest,
 }
