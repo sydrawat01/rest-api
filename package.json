@@ -4,6 +4,7 @@
   "main": "app.js",
   "license": "MIT",
   "scripts": {
+    "env": "nodemon -r dotenv/config",
     "dev": "nodemon --exec babel-node app.js",
     "clean": "rm -rf ./dist",
     "build": "yarn clean && babel app.js --out-dir ./dist",
