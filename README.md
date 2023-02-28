@@ -232,6 +232,42 @@ Example:
 docker rm rest-api
 ```
 
+### Delete docker images
+
+To delete docker images:
+
+1. Check the name of the image you want to delete:
+
+```shell
+docker images
+```
+
+2. Delete the image by it's name:
+
+```shell
+docker image rm <image-name>:<image-version>
+```
+
+Example:
+
+```shell
+# check for docker images
+docker images
+```
+
+```shell
+# output
+╰─ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+api          v3        4d74db3e5ada   7 hours ago   366MB
+api          v2        7bc302778f7c   7 hours ago   366MB
+```
+
+```shell
+# remove the desired docker image
+docker image rm api:v2
+```
+
 ### Work in progress
 
-Do not build `.env` into the docker image. 
+Do not build `.env` into the docker image.
