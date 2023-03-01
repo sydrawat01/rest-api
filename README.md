@@ -129,6 +129,42 @@ docker run -ti --name rest-api-container -p 3000:1337 api:v1
 
 8. Test the API endpoints using `Postman` on `http://localhost:3000`.
 
+9. To stop a running container:
+
+```shell
+docker container stop <container-name>
+```
+
+Example:
+
+```shell
+docker container stop gpt-container
+```
+
+10. To restart a stopped container:
+
+```shell
+docker container start <container-name>
+```
+
+Example:
+
+```shell
+docker container start gpt-container
+```
+
+To enter the `bash` terminal within the container:
+
+```shell
+docker exec -ti <container-name> bash
+```
+
+Example:
+
+```shell
+docker exec -ti gpt-container bash
+```
+
 ### Docker bind mount
 
 The `-v` flag represents the volume in our container, where our application will be uploaded in the Docker Ubuntu image.
