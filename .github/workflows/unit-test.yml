@@ -17,7 +17,7 @@ jobs:
     name: Run unit tests
     steps:
       - uses: actions/checkout@v3
-      - name: 'Create .env file'
+      - name: "Create .env file"
         run: |
           touch .env
           echo ENVIRONMENT=${{ env.ENVIRONMENT }} >> .env
@@ -31,3 +31,6 @@ jobs:
         run: yarn
       - name: Run test scripts
         run: yarn test
+        # Github token to run public workflows
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
