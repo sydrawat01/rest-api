@@ -1,27 +1,30 @@
 # REST API
 
+[![Release](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml) [![Unit Tests](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml)
+
 This is a basic skeleton code to create a basic REST API using NodeJS, ExpressJS and Babel.
 
-> NOTE: Please note that this is still a work in progress, I plan to release this as a simple starter template to create a simple REST API.
+> \[!NOTE]\
+> NOTE: Please note that this is still a work in progress.
 
 ## Features
 
 - ES7+
 - NodeJS
 - ExpressJS
-- Babel (to transpile code to older version of ECMA Script)
 - Winston for logging
 - Basic test scripts
 - Custom error handlers
+- PostgreSQL and Sequelize
+- Bcrypt
+- Custom Amazon Machine Image using Hashicorp Packer
+- Containerization using Docker
 
 ## Planned features
 
-- PostgreSQL and Sequelize
-- Bcrypt
 - AWS S3, DynamoDB and SNS Topics
 - Email verification of user
 - TypeScript support
-- Dockerization
 
 ## Connect to local db
 

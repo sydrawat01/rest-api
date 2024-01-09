@@ -1,0 +1,14 @@
+[Unit]
+Description=REST API service
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+ExecStart=node /home/ubuntu/webapp/app.js
+EnvironmentFile=/home/ubuntu/webapp/.env
+# ExecStartPost=/bin/sh -c "sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 1337"
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
