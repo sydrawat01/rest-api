@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize'
-import appConfig from '../configs/app.config'
-import logger from '../configs/logger.config'
-import userModel from './user.model'
+import appConfig from '../configs/app.config.js'
+import logger from '../configs/logger.config.js'
+import userModel from './user.model.js'
 
 const sequelize = new Sequelize(
   appConfig.DB,

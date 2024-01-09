@@ -1,4 +1,4 @@
-import { healthRoute } from './health.route'
-import { userRoute } from './user.route'
+import { healthRoute } from './health.route.js'
+import { userRoute } from './user.route.js'
 
 export { healthRoute, userRoute }

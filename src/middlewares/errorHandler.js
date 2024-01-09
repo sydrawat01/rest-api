@@ -1,5 +1,5 @@
-import appConfig from '../configs/app.config'
-import logger from '../configs/logger.config'
+import appConfig from '../configs/app.config.js'
+import logger from '../configs/logger.config.js'
 
 export const errorHandler = (err, req, res, next) => {
   const errStatus = err.statusCode || 500

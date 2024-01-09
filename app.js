@@ -2,11 +2,11 @@ import 'dotenv/config'
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import appConfig from './src/configs/app.config'
-import { healthRoute, userRoute } from './src/routes/index.routes'
-import logger from './src/configs/logger.config'
-import db from './src/models/index.model'
-import { errorHandler } from './src/middlewares/errorHandler'
+import appConfig from './src/configs/app.config.js'
+import { healthRoute, userRoute } from './src/routes/index.routes.js'
+import logger from './src/configs/logger.config.js'
+import db from './src/models/index.model.js'
+import { errorHandler } from './src/middlewares/errorHandler.js'
 
 const app = express()
 const { HOSTNAME, PORT, ENVIRONMENT } = appConfig

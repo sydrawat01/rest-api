@@ -1,5 +1,5 @@
-import { getUserPassword, comparePassword } from '../utils/auth.util'
-import { UnauthorizedError } from '../utils/error.util'
+import { getUserPassword, comparePassword } from '../utils/auth.util.js'
+import { UnauthorizedError } from '../utils/error.util.js'
 
 export default (User) => {
   const authToken = async (req, res, next) => {
