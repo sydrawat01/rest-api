@@ -1,0 +1,50 @@
+# This workflow will validate the Packer AMI templates created using the Hashicorp Configuration Language (HCL2)
+name: Packer AMI template validation
+
+on:
+  workflow_dispatch:
+  # pull_request:
+  #   branches: [master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate packer template for the custom AMI
+    steps:
+      - name: Checkout code from branch
+        uses: actions/checkout@v4
+
+      - name: Build artifacts
+        run: |
+          zip -r webapp.zip ./
+          pwd ./webapp
+
+      - name: Packer variables
+        run: |
+          touch ami.pkrvars.hcl
+          echo ami_prefix=\"${{ vars.AMI_PREFIX }}\" >> ami.pkrvars.hcl
+          echo OS=\"${{ vars.OS }}\" >> ami.pkrvars.hcl
+          echo ubuntu_version=\"${{ vars.VERSION }}\" >> ami.pkrvars.hcl
+          echo ssh_username=\"${{ secrets.SSH }}\" >> ami.pkrvars.hcl
+          echo subnet_id=\"${{ secrets.SUBNET_ID }}\" >> ami.pkrvars.hcl
+          echo dev_id=\"${{ secrets.DEV_ID }}\" >> ami.pkrvars.hcl
+          echo prod_id=\"${{ secrets.PROD_ID }}\" >> ami.pkrvars.hcl
+          echo source_ami=\"${{ var.SOURCE_AMI }}\" >> ami.pkrvars.hcl
+          echo aws_region=\"${{ var.AWS_REGION }}\" >> ami.pkrvars.hcl
+          echo instance_type=\"${{ var.INSTANCE_TYPE}}\" >> ami.pkrvars.hcl
+          echo volume_type=\"${{ var.VOLUME_TYPE}}\" >> ami.pkrvars.hcl
+          echo volume_size=\"${{ var.VOLUME_SIZE}}\" >> ami.pkrvars.hcl
+          echo device_name=\"${{ var.DEVICE_NAME}}\" >> ami.pkrvars.hcl
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: "latest"
+
+      - name: Packer init, format and validate template with datasources
+        run: |
+          cd aws/packer/
+          packer fmt .
+          packer init ami.pkr.hcl
+          packer validate -evaluate-datasources --var-file=ami.pkrvars.hcl ami.pkr.hcl
