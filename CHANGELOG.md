@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/sydrawat01/rest-api/compare/v1.1.0...v1.1.1) (2024-01-09)
+
+
+### Bug Fixes
+
+* packer validation and build CI pipelines ([e70a4f8](https://github.com/sydrawat01/rest-api/commit/e70a4f8337dec94cf6cd47308ff38842f1a67b41))
+
 # [1.1.0](https://github.com/sydrawat01/rest-api/compare/v1.0.0...v1.1.0) (2024-01-09)
 
 
