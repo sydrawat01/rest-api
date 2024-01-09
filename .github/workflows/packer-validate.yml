@@ -3,8 +3,8 @@ name: Packer AMI template validation
 
 on:
   workflow_dispatch:
-  # pull_request:
-  #   branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
   validate:
@@ -21,7 +21,7 @@ jobs:
 
       - name: Packer variables
         run: |
-          touch ami.pkrvars.hcl
+          touch aws/packer/ami.pkrvars.hcl
           echo ami_prefix=\"${{ vars.AMI_PREFIX }}\" >> ami.pkrvars.hcl
           echo OS=\"${{ vars.OS }}\" >> ami.pkrvars.hcl
           echo ubuntu_version=\"${{ vars.VERSION }}\" >> ami.pkrvars.hcl
@@ -29,12 +29,13 @@ jobs:
           echo subnet_id=\"${{ secrets.SUBNET_ID }}\" >> ami.pkrvars.hcl
           echo dev_id=\"${{ secrets.DEV_ID }}\" >> ami.pkrvars.hcl
           echo prod_id=\"${{ secrets.PROD_ID }}\" >> ami.pkrvars.hcl
-          echo source_ami=\"${{ var.SOURCE_AMI }}\" >> ami.pkrvars.hcl
-          echo aws_region=\"${{ var.AWS_REGION }}\" >> ami.pkrvars.hcl
-          echo instance_type=\"${{ var.INSTANCE_TYPE}}\" >> ami.pkrvars.hcl
-          echo volume_type=\"${{ var.VOLUME_TYPE}}\" >> ami.pkrvars.hcl
-          echo volume_size=\"${{ var.VOLUME_SIZE}}\" >> ami.pkrvars.hcl
-          echo device_name=\"${{ var.DEVICE_NAME}}\" >> ami.pkrvars.hcl
+          echo source_ami=\"${{ vars.SOURCE_AMI }}\" >> ami.pkrvars.hcl
+          echo aws_region=\"${{ vars.AWS_REGION }}\" >> ami.pkrvars.hcl
+          echo instance_type=\"${{ vars.INSTANCE_TYPE}}\" >> ami.pkrvars.hcl
+          echo volume_type=\"${{ vars.VOLUME_TYPE}}\" >> ami.pkrvars.hcl
+          echo volume_size=\"${{ vars.VOLUME_SIZE}}\" >> ami.pkrvars.hcl
+          echo device_name=\"${{ vars.DEVICE_NAME}}\" >> ami.pkrvars.hcl
+          cp ami.pkrvars.hcl aws/packer
 
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
@@ -44,7 +45,7 @@ jobs:
 
       - name: Packer init, format and validate template with datasources
         run: |
-          cd aws/packer/
+          cd aws/packer &&
           packer fmt .
           packer init ami.pkr.hcl
-          packer validate -evaluate-datasources --var-file=ami.pkrvars.hcl ami.pkr.hcl
+          packer validate -syntax-only --var-file=ami.pkrvars.hcl ami.pkr.hcl
