@@ -1,5 +1,5 @@
 import supertest from 'supertest'
-import app from '../app'
+import app from '../app.js'
 
 describe('Unit Test Suite', () => {
   it('GET /health API endpoint', (done) => {

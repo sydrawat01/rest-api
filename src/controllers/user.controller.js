@@ -1,7 +1,7 @@
 import { v4 } from 'uuid'
-import db from '../models/index.model'
-import logger from '../configs/logger.config'
-import { hashPassword } from '../utils/auth.util'
+import db from '../models/index.model.js'
+import logger from '../configs/logger.config.js'
+import { hashPassword } from '../utils/auth.util.js'
 import {
   formatUserData,
   verifyUserInDB,
@@ -9,8 +9,8 @@ import {
   validateRequestBody,
   validateUserID,
   validateUpdateRequest,
-} from '../utils/user.util'
-import { UnauthorizedError } from '../utils/error.util'
+} from '../utils/user.util.js'
+import { UnauthorizedError } from '../utils/error.util.js'
 
 const User = db.users
 
@@ -113,4 +113,39 @@ const updateUserData = async (req, res, next) => {
   }
 }
 
-export { createUser, fetchUserData, updateUserData }
+const deleteUserData = async (req, res, next) => {
+  // TODO: delete user data based on ID
+  try {
+    const { protocol, method, hostname, originalUrl } = req
+    const headers = { ...req.headers }
+    const metaData = { protocol, method, hostname, originalUrl, headers }
+    logger.info(
+      `Requesting ${method} ${protocol}://${hostname}${originalUrl}`,
+      {
+        metaData,
+      }
+    )
+
+    const { user } = req
+    // Validate user ID request parameter
+    validateUserID(req.params.id)
+    // Find user based on the user ID in the database
+    const userToDelete = await User.findByPk(req.params.id)
+    // Verify that the user exists in the database
+    verifyUserInDB(userToDelete)
+
+    // Check if the authenticated user is the owner of the account
+    if (req.params.id === user.id) {
+      // Delete the user data from the database
+      await userToDelete.destroy()
+      return res.status(204).send()
+    }
+
+    // If a user tries to delete another user's data
+    throw new UnauthorizedError(`Unauthorized access`)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export { createUser, fetchUserData, updateUserData, deleteUserData }

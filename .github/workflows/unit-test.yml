@@ -4,33 +4,52 @@ env:
   ENVIRONMENT: test
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [master]
 
 jobs:
-  build:
+  unittest:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x]
-
+    environment: ${{ vars.ENVIRONMENT }}
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: ${{ vars.DATABASE }}
+          POSTGRES_USER: ${{ vars.DBUSER }}
+          POSTGRES_PASSWORD: ${{ secrets.DBPASSWORD }}
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     name: Run unit tests
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - name: "Create .env file"
         run: |
           touch .env
           echo ENVIRONMENT=${{ env.ENVIRONMENT }} >> .env
           echo HOSTNAME=${{ secrets.HOSTNAME}} >> .env
           echo PORT=${{ secrets.PORT }} >> .env
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: yarn
+          echo DATABASE=${{ vars.DATABASE }} >> .env
+          echo DBUSER=${{ vars.DBUSER }} >> .env
+          echo DBPASSWORD=${{ secrets.DBPASSWORD }} >> .env
+      - name: Clean Install Dependencies
+        run: npm ci
       - name: Run test scripts
-        run: yarn test
+        run: npm run test
         # Github token to run public workflows
         env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

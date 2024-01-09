@@ -1,4 +1,5 @@
-import logger from '../configs/logger.config'
+import logger from '../configs/logger.config.js'
+
 import {
   BadRequestError,
   ResourceNotFoundError,
@@ -7,7 +8,7 @@ import {
   SequelizeValidationError,
   SequelizeDatabaseError,
   UnknownError,
-} from './error.util'
+} from './error.util.js'
 
 /**
  * Format the user data after storing in database to be displayed
@@ -59,6 +60,7 @@ const verifyUserInDB = (user) => {
     const message = 'User not found in the database'
     throw new ResourceNotFoundError(message)
   }
+  return true
 }
 
 /**

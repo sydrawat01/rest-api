@@ -1,5 +1,5 @@
-import logger from '../configs/logger.config'
-import appConfig from '../configs/app.config'
+import logger from '../configs/logger.config.js'
+import appConfig from '../configs/app.config.js'
 
 const health = (req, res) => {
   const { protocol, method, hostname, originalUrl } = req

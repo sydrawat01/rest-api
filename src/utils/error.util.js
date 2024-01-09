@@ -1,4 +1,4 @@
-import responseCodes from '../constants/httpResponseCodes'
+import responseCodes from '../constants/httpResponseCodes.js'
 
 class HTTPError extends Error {
   constructor({ message, name, statusCode, data }) {
