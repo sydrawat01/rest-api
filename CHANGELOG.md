@@ -1,3 +1,11 @@
+## [1.1.2](https://github.com/sydrawat01/rest-api/compare/v1.1.1...v1.1.2) (2024-01-10)
+
+
+### Bug Fixes
+
+* build pipeline for AWS AMI ([1675b0e](https://github.com/sydrawat01/rest-api/commit/1675b0e9ffd8c4103732eadf404b257acc7b7e2f))
+* update README to inculde validate CI pipeline status ([e367a31](https://github.com/sydrawat01/rest-api/commit/e367a3164f2cdf609d07aa353c609d3d4403c597))
+
 ## [1.1.1](https://github.com/sydrawat01/rest-api/compare/v1.1.0...v1.1.1) (2024-01-09)
 
 
