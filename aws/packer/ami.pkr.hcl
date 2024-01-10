@@ -20,37 +20,37 @@ variable "aws_region" {
 variable "source_ami" {
   type        = string
   description = "Default Ubuntu AMI to build our custom AMI"
-  default     = "ami-08c40ec9ead489470" #Ubuntu 22.04 LTS
+  default     = "ami-0c7217cdde317cfec" #Ubuntu 22.04 LTS
 }
 
 variable "ami_prefix" {
   type        = string
   description = "AWS AMI name prefix"
-  default     = "ami_prefix"
+  default     = "sid"
 }
 
 variable "ssh_username" {
   type        = string
   description = "username to ssh into the AMI Instance"
-  default     = "username"
+  default     = "ubuntu"
 }
 
 variable "subnet_id" {
   type        = string
   description = "Subnet of the default VPC"
-  default     = "subnet-03d1bcaedaf95a150"
+  default     = "subnet-0365fcdea3be3cff5"
 }
 
 variable "OS" {
   type        = string
   description = "Base operating system version"
-  default     = "OS"
+  default     = "ubuntu"
 }
 
 variable "ubuntu_version" {
   type        = string
   description = "Version of the custom AMI"
-  default     = "ubuntu-version"
+  default     = "22.04"
 }
 
 variable "dev_id" {
@@ -68,7 +68,7 @@ variable "prod_id" {
 variable "instance_type" {
   type        = string
   description = "AWS AMI instance type"
-  default     = "t3.micro"
+  default     = "t2.micro"
 }
 variable "volume_type" {
   type        = string
@@ -143,7 +143,7 @@ build {
   }
 
   provisioner "file" {
-    source      = "nodeserver.service"              # path in local system to a tar.gz file
+    source      = "../../nodeserver.service"        # path in local system to a tar.gz file
     destination = "/home/ubuntu/nodeserver.service" # path in the AMI to store the webapp
   }
 
