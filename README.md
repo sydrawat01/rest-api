@@ -1,6 +1,6 @@
 # REST API
 
-[![Release](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml) [![Unit Tests](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml)
+[![Release](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml) [![Unit Tests](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml) [![Packer AMI template validation](https://github.com/sydrawat01/rest-api/actions/workflows/packer-validate.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/packer-validate.yml)
 
 This is a basic skeleton code to create a basic REST API using NodeJS, ExpressJS and Babel.
 

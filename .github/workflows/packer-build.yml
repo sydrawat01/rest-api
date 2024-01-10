@@ -49,7 +49,6 @@ jobs:
           echo DBUSER=${{ vars.DBUSER }} >> .env
           echo DBPASSWORD=${{ secrets.DBPASSWORD }} >> .env
           zip -r webapp.zip ./
-          pwd ./webapp
 
       - name: Packer variables
         run: |
@@ -69,11 +68,11 @@ jobs:
           echo device_name=\"${{ vars.DEVICE_NAME}}\" >> ami.pkrvars.hcl
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_DEV_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_DEV_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
@@ -81,24 +80,20 @@ jobs:
         with:
           version: "latest"
 
-      - name: Packer format
-        id: fmt
-        run: "packer fmt ."
-
       - name: Packer init, format validate and build custom AMI
         run: |
-          cd aws/packer/
+          cd aws/packer &&
           packer fmt .
           packer init ami.pkr.hcl
           packer validate -evaluate-datasources --var-file=ami.pkrvars.hcl ami.pkr.hcl
           packer build --var-file=ami.pkrvars.hcl ami.pkr.hcl
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
       - name: Instance Refresh automation
         run: |
           sudo apt-get install jq
