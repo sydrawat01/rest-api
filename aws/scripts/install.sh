@@ -16,6 +16,7 @@ echo "|                                                                         
 echo "|                                                           INSTALL SCRIPT v1.0                                                           |"
 echo "|                                                                                                                                         |"
 echo "+-----------------------------------------------------------------------------------------------------------------------------------------+"
+sudo apt-get update --quiet && sudo apt-get upgrade -y
 
 # Install zip and unnzip
 echo "+-----------------------------------------------------------------------------------------------------------------------------------------+"
@@ -105,7 +106,7 @@ echo "|                                                                         
 echo "|                                                        Installing AWS Cloudwatch Agent                                                  |"
 echo "|                                                                                                                                         |"
 echo "+-----------------------------------------------------------------------------------------------------------------------------------------+"
-wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+wget -q https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
 AWSCLDWTCH=$?
 if [ $AWSCLDWTCH -eq 0 ]; then
   sleep 5

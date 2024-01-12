@@ -4,7 +4,7 @@ import app from '../app.js'
 describe('Unit Test Suite', () => {
   it('GET /health API endpoint', (done) => {
     supertest(app)
-      .get('/health')
+      .get('/healthz')
       .expect(200)
       .end((err, res) => {
         if (err) return done(err)

@@ -1,4 +1,4 @@
-name: Instance Refresh
+name: Build
 
 on:
   workflow_dispatch:
@@ -8,6 +8,23 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     environment: ${{ vars.ENVIRONMENT }}
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: ${{ vars.DATABASE }}
+          POSTGRES_USER: ${{ vars.DBUSER }}
+          POSTGRES_PASSWORD: ${{ secrets.DBPASSWORD }}
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     name: Run unit tests
     steps:
       - uses: actions/checkout@v4
