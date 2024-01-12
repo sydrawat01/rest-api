@@ -48,7 +48,7 @@ jobs:
 
       - name: Packer variables
         run: |
-          cd aws/packer && touch ami.pkrvars.hcl
+          cd aws/packer/ && touch ami.pkrvars.hcl
           echo ami_prefix=\"${{ vars.AMI_PREFIX }}\" >> ami.pkrvars.hcl
           echo OS=\"${{ vars.OS }}\" >> ami.pkrvars.hcl
           echo ubuntu_version=\"${{ vars.VERSION }}\" >> ami.pkrvars.hcl
@@ -75,19 +75,19 @@ jobs:
         id: setup
         with:
           version: "latest"
-
-      - name: Run `packer fmt`
-        id: fmt
-        run: "packer fmt ."
       - name: Run `packer init`
         id: init
-        run: "packer init ami.pkr.hcl"
+        run: "packer init ./aws/packer/ami.pkr.hcl"
       - name: Run `packer validate`
         id: validate
-        run: "packer validate -evaluate-datasources --var-file=ami.pkrvars.hcl ami.pkr.hcl"
+        run: |
+          cd aws/packer/ &&
+          packer validate -evaluate-datasources --var-file=ami.pkrvars.hcl ami.pkr.hcl
       - name: Run `packer build`
         id: build
-        run: "packer build --var-file=ami.pkrvars.hcl ami.pkr.hcl"
+        run: |
+          cd aws/packer/ &&
+          packer build --var-file=ami.pkrvars.hcl ami.pkr.hcl
 
       # - name: Packer init, format validate and build custom AMI
       #   run: |
