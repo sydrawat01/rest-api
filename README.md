@@ -1,6 +1,6 @@
 # REST API
 
-[![Release](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml) [![Unit Tests](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml) [![Packer AMI template validation](https://github.com/sydrawat01/rest-api/actions/workflows/packer-validate.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/packer-validate.yml)
+[![Unit Tests](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/unit-test.yml) [![Packer AMI template validation](https://github.com/sydrawat01/rest-api/actions/workflows/packer-validate.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/packer-validate.yml) [![Build](https://github.com/sydrawat01/rest-api/actions/workflows/packer-build.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/packer-build.yml) [![Release](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml/badge.svg)](https://github.com/sydrawat01/rest-api/actions/workflows/release.yml)
 
 This is a basic skeleton code to create a basic REST API using NodeJS, ExpressJS and Babel.
 
@@ -310,3 +310,11 @@ docker image rm api:v2
 ### Work in progress
 
 Do not build `.env` into the docker image.
+
+## Author
+
+[Siddharth Rawat](mailto:sydrawat@gmail.com)
+
+## License
+
+[MIT License](./LICENSE)
