@@ -1,27 +1,22 @@
 name: Instance Refresh
 
-env:
-  ARTIFACT_NAME: webapp
-  AWS_REGION: us-east-1
-  ENVIRONMENT: test
-
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [master]
+  push:
+    branches: [master]
 jobs:
   tests:
     runs-on: ubuntu-latest
-
+    environment: ${{ vars.ENVIRONMENT }}
     name: Run unit tests
     steps:
       - uses: actions/checkout@v4
       - name: "Create .env file"
         run: |
           touch .env
-          echo ENVIRONMENT=${{ env.ENVIRONMENT }} >> .env
-          echo HOSTNAME=${{ secrets.HOSTNAME}} >> .env
-          echo PORT=${{ secrets.PORT }} >> .env
+          echo ENVIRONMENT=${{ vars.ENVIRONMENT }} >> .env
+          echo HOSTNAME=${{ vars.HOSTNAME}} >> .env
+          echo PORT=${{ vars.PORT }} >> .env
           echo DATABASE=${{ vars.DATABASE }} >> .env
           echo DBUSER=${{ vars.DBUSER }} >> .env
           echo DBPASSWORD=${{ secrets.DBPASSWORD }} >> .env
@@ -34,6 +29,7 @@ jobs:
   packer:
     needs: tests
     runs-on: ubuntu-latest
+    environment: ${{ vars.ENVIRONMENT }}
     name: Build AWS Custom AMI with REST API app artifacts
     steps:
       - name: Checkout code from branch
@@ -42,9 +38,9 @@ jobs:
       - name: Build artifacts
         run: |
           touch .env
-          echo ENVIRONMENT=${{ env.ENVIRONMENT }} >> .env
-          echo HOSTNAME=${{ secrets.HOSTNAME}} >> .env
-          echo PORT=${{ secrets.PORT }} >> .env
+          echo ENVIRONMENT=${{ vars.ENVIRONMENT }} >> .env
+          echo HOSTNAME=${{ vars.HOSTNAME}} >> .env
+          echo PORT=${{ vars.PORT }} >> .env
           echo DATABASE=${{ vars.DATABASE }} >> .env
           echo DBUSER=${{ vars.DBUSER }} >> .env
           echo DBPASSWORD=${{ secrets.DBPASSWORD }} >> .env
@@ -52,11 +48,11 @@ jobs:
 
       - name: Packer variables
         run: |
-          touch aws/packer/ami.pkrvars.hcl
+          cd aws/packer && touch ami.pkrvars.hcl
           echo ami_prefix=\"${{ vars.AMI_PREFIX }}\" >> ami.pkrvars.hcl
           echo OS=\"${{ vars.OS }}\" >> ami.pkrvars.hcl
           echo ubuntu_version=\"${{ vars.VERSION }}\" >> ami.pkrvars.hcl
-          echo ssh_username=\"${{ secrets.SSH }}\" >> ami.pkrvars.hcl
+          echo ssh_username=\"${{ vars.SSH_USERNAME }}\" >> ami.pkrvars.hcl
           echo subnet_id=\"${{ secrets.SUBNET_ID }}\" >> ami.pkrvars.hcl
           echo dev_id=\"${{ secrets.DEV_ID }}\" >> ami.pkrvars.hcl
           echo prod_id=\"${{ secrets.PROD_ID }}\" >> ami.pkrvars.hcl
@@ -80,53 +76,66 @@ jobs:
         with:
           version: "latest"
 
-      - name: Packer init, format validate and build custom AMI
-        run: |
-          cd aws/packer &&
-          packer fmt .
-          packer init ami.pkr.hcl
-          packer validate -evaluate-datasources --var-file=ami.pkrvars.hcl ami.pkr.hcl
-          packer build --var-file=ami.pkrvars.hcl ami.pkr.hcl
+      - name: Run `packer fmt`
+        id: fmt
+        run: "packer fmt ."
+      - name: Run `packer init`
+        id: init
+        run: "packer init ami.pkr.hcl"
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate -evaluate-datasources --var-file=ami.pkrvars.hcl ami.pkr.hcl"
+      - name: Run `packer build`
+        id: build
+        run: "packer build --var-file=ami.pkrvars.hcl ami.pkr.hcl"
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
-      - name: Instance Refresh automation
-        run: |
-          sudo apt-get install jq
-          ASG_NAME=${{ secrets.ASG_NAME }}
-          LAUNCH_CONFIG=${{ secrets.LAUNCH_CONFIG }}
-          IMAGE=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
-          IMAGE_ID=$(jq -n \
-            --arg img "$IMAGE" \
-            '{"ImageId": $img}')
-          aws ec2 create-launch-template-version \
-            --launch-template-name "$LAUNCH_CONFIG" \
-            --version-description updateAMI --source-version 1 \
-            --launch-template-data="$IMAGE_ID"
-          TEMPLATE_VERSION=$(aws ec2 describe-launch-template-versions --launch-template-name="$LAUNCH_CONFIG" \
-            --filters="Name=is-default-version,Values=false" \
-            --query 'sort_by(LaunchTemplateVersions, &CreateTime)[-1].[VersionNumber]' --output text)
-          aws autoscaling update-auto-scaling-group --auto-scaling-group-name $ASG_NAME \
-            --launch-template LaunchTemplateName="$LAUNCH_CONFIG",Version=$TEMPLATE_VERSION
-          aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name $ASG_NAME --strategy Rolling
-          printf "Instance refresh in progress"
-          while true;
-          do
-            instance_refresh_status=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name $ASG_NAME \
-              --query "InstanceRefreshes[0].Status" --output text)
-            if [ "$instance_refresh_status" = "Successful" ]; then
-              printf "\nInstance refresh successful!"
-              break
-            fi
-            if [ "$instance_refresh_status" = "Cancelling" ] || [ "$instance_refresh_status" = "Cancelled" ] || [ "$instance_refresh_status" = "Failed" ]; then
-              printf "\nInstance refresh failed!"
-              exit 1
-            fi
-            echo -ne "."
-            sleep 10
-          done
+      # - name: Packer init, format validate and build custom AMI
+      #   run: |
+      #     packer fmt .
+      #     packer init ami.pkr.hcl
+      #     packer validate -evaluate-datasources --var-file=ami.pkrvars.hcl ami.pkr.hcl
+      #     packer build --var-file=ami.pkrvars.hcl ami.pkr.hcl
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY }}
+      #     aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_KEY }}
+      #     aws-region: ${{ vars.AWS_REGION }}
+
+      # - name: Instance Refresh automation
+      #   run: |
+      #     sudo apt-get install jq
+      #     ASG_NAME=${{ secrets.ASG_NAME }}
+      #     LAUNCH_CONFIG=${{ secrets.LAUNCH_CONFIG }}
+      #     IMAGE=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
+      #     IMAGE_ID=$(jq -n \
+      #       --arg img "$IMAGE" \
+      #       '{"ImageId": $img}')
+      #     aws ec2 create-launch-template-version \
+      #       --launch-template-name "$LAUNCH_CONFIG" \
+      #       --version-description updateAMI --source-version 1 \
+      #       --launch-template-data="$IMAGE_ID"
+      #     TEMPLATE_VERSION=$(aws ec2 describe-launch-template-versions --launch-template-name="$LAUNCH_CONFIG" \
+      #       --filters="Name=is-default-version,Values=false" \
+      #       --query 'sort_by(LaunchTemplateVersions, &CreateTime)[-1].[VersionNumber]' --output text)
+      #     aws autoscaling update-auto-scaling-group --auto-scaling-group-name $ASG_NAME \
+      #       --launch-template LaunchTemplateName="$LAUNCH_CONFIG",Version=$TEMPLATE_VERSION
+      #     aws autoscaling start-instance-refresh \
+      #       --auto-scaling-group-name $ASG_NAME --strategy Rolling
+      #     printf "Instance refresh in progress"
+      #     while true;
+      #     do
+      #       instance_refresh_status=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name $ASG_NAME \
+      #         --query "InstanceRefreshes[0].Status" --output text)
+      #       if [ "$instance_refresh_status" = "Successful" ]; then
+      #         printf "\nInstance refresh successful!"
+      #         break
+      #       fi
+      #       if [ "$instance_refresh_status" = "Cancelling" ] || [ "$instance_refresh_status" = "Cancelled" ] || [ "$instance_refresh_status" = "Failed" ]; then
+      #         printf "\nInstance refresh failed!"
+      #         exit 1
+      #       fi
+      #       echo -ne "."
+      #       sleep 10
+      #     done

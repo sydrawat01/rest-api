@@ -9,6 +9,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    environment: ${{ vars.ENVIRONMENT }}
     name: Validate packer template for the custom AMI
     steps:
       - name: Checkout code from branch
@@ -25,7 +26,7 @@ jobs:
           echo ami_prefix=\"${{ vars.AMI_PREFIX }}\" >> ami.pkrvars.hcl
           echo OS=\"${{ vars.OS }}\" >> ami.pkrvars.hcl
           echo ubuntu_version=\"${{ vars.VERSION }}\" >> ami.pkrvars.hcl
-          echo ssh_username=\"${{ secrets.SSH }}\" >> ami.pkrvars.hcl
+          echo ssh_username=\"${{ vars.SSH_USERNAME }}\" >> ami.pkrvars.hcl
           echo subnet_id=\"${{ secrets.SUBNET_ID }}\" >> ami.pkrvars.hcl
           echo dev_id=\"${{ secrets.DEV_ID }}\" >> ami.pkrvars.hcl
           echo prod_id=\"${{ secrets.PROD_ID }}\" >> ami.pkrvars.hcl
@@ -49,3 +50,5 @@ jobs:
           packer fmt .
           packer init ami.pkr.hcl
           packer validate -syntax-only --var-file=ami.pkrvars.hcl ami.pkr.hcl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
