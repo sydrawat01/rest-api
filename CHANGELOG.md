@@ -1,3 +1,11 @@
+## [1.1.3](https://github.com/sydrawat01/rest-api/compare/v1.1.2...v1.1.3) (2024-01-12)
+
+
+### Bug Fixes
+
+* CD pipeline failure hotfix ([ef83b32](https://github.com/sydrawat01/rest-api/commit/ef83b328618c954aec78f8d0862b6f93a29757d5))
+* update build script and healthz endpoint ([ec3fcb6](https://github.com/sydrawat01/rest-api/commit/ec3fcb6c831eeedb266e630c2a2927930be43981))
+
 ## [1.1.2](https://github.com/sydrawat01/rest-api/compare/v1.1.1...v1.1.2) (2024-01-10)
 
 
